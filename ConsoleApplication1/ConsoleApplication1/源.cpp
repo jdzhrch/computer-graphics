@@ -3,7 +3,7 @@
 #include <windows.h>  
 #include <cstdlib>  
 #include <glut.h> 
-#include "MainWnd.h"
+#include "objLoader.h"
 
 static int stripeImageWidth = 32;
 static float G = 9.8;
@@ -12,7 +12,8 @@ static double dt = 0.01;
 static int pos_ground = -2;
 static float lose_vy = 2;
 static float v0 = 10;
-Mesh mainwnd;
+static const char* objfilename = "Eight.obj";
+Mesh mesh;
 enum Direction {
 	SIT = 0,
 	UP = 1,
@@ -26,7 +27,7 @@ void init(void) {
 	y = pos_ground;
 	vy = 0; 
 	direction = SIT;
-	mainwnd.ReadPIC("Eight.obj");
+	mesh.parse(objfilename);
 	GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
 	glClearColor(1.0, 1.0, 1.0, 0.3);
 	glShadeModel(GL_SMOOTH);
@@ -44,7 +45,7 @@ void display(void) {
 	glPushMatrix();
 	glTranslated(0, y, 0);
 	glutSolidSphere(2, 50, 50);
-	mainwnd.GLCube();
+	mesh.draw();
 	if (direction == DOWN) {
 		y = y +vy*dt + 0.5*G*dt*dt; 
 		vy = vy - G*dt;

@@ -1,7 +1,9 @@
-﻿  源.cpp
-  MainWnd.cpp
-c:\users\administrator.sc-201703221159\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\mainwnd.cpp(12): warning C4018: “<”: 有符号/无符号不匹配
-c:\users\administrator.sc-201703221159\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\mainwnd.cpp(60): warning C4018: “<”: 有符号/无符号不匹配
+﻿  objLoader.cpp
+c:\users\administrator.sc-201703221159\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\objloader.cpp(12): warning C4018: “<”: 有符号/无符号不匹配
+c:\users\administrator.sc-201703221159\documents\visual studio 2015\projects\consoleapplication1\consoleapplication1\objloader.cpp(60): warning C4018: “<”: 有符号/无符号不匹配
+  正在生成代码...
+  正在编译...
+  源.cpp
   正在生成代码...
   ConsoleApplication1.vcxproj -> C:\Users\Administrator.SC-201703221159\Documents\Visual Studio 2015\Projects\ConsoleApplication1\Debug\ConsoleApplication1.exe
   ConsoleApplication1.vcxproj -> C:\Users\Administrator.SC-201703221159\Documents\Visual Studio 2015\Projects\ConsoleApplication1\Debug\ConsoleApplication1.pdb (Full PDB)

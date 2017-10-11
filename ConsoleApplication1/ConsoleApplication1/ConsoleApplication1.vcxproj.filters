@@ -18,12 +18,12 @@
     <ClCompile Include="源.cpp">
       <Filter>资源文件</Filter>
     </ClCompile>
-    <ClCompile Include="MainWnd.cpp">
+    <ClCompile Include="objLoader.cpp">
       <Filter>头文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MainWnd.h">
+    <ClInclude Include="objLoader.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
