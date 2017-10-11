@@ -13,6 +13,7 @@ static int pos_ground = -2;
 static float lose_vy = 2;
 static float v0 = 10;
 static const char* objfilename = "Eight.obj";
+static bool ifLoadModel = false;
 Mesh mesh;
 enum Direction {
 	SIT = 0,
@@ -43,9 +44,17 @@ void idle(void)
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glPushMatrix();
+	glLoadIdentity();
 	glTranslated(0, y, 0);
-	glutSolidSphere(2, 50, 50);
-	mesh.draw();
+	if (ifLoadModel) {
+		glRotatef(80.0f, 1.0f, 0.0f, 0.0f);	
+		mesh.draw();
+	}
+	else {
+		dt = 0.001;
+		glutSolidSphere(2, 50, 50);
+	}
+	
 	if (direction == DOWN) {
 		y = y +vy*dt + 0.5*G*dt*dt; 
 		vy = vy - G*dt;

@@ -26,6 +26,13 @@ struct Face {
 	int vertexId[3];
 	int textureId[3];
 	int normalVectorId[3];
+	Face(){//用于检验f里面是否有这一类型数据 根据格式不同 由于ID下标从1开始 因此此处初始化为0用于检验
+		for(int i=0;i<3;i++){
+			vertexId[i] = 0;
+			textureId[i] = 0;
+			normalVectorId[i] = 0;
+		}
+	}
 };
 class Mesh {
 public:

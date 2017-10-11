@@ -3,27 +3,29 @@
 #include <sstream>
 #include <fstream>
 using namespace std;
+//以面为单位进行绘制（面是一个个的三角形）
 void Mesh::draw()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Clear buffers  // 清除屏幕及深度缓存
-	glLoadIdentity(); // Load identity matrix	// 重置模型观察矩阵
-	extern GLdouble y;
-	glTranslated(0, y, 0);
 	for (int i = 0; i < faces.size(); i++)
 	{
 		glBegin(GL_TRIANGLES);
 		Face face = faces[i];
 		for (int j = 0; j < 3; j++) {
-			Texture texture = textures[face.textureId[j]-1];
-			Vertex vertex = vertexes[face.vertexId[j]-1];
-			glTexCoord2f(texture.tx, texture.ty);
-			glVertex3f(vertex.x, vertex.y, vertex.z);
+			if (face.textureId[0] != 0) {
+				Texture texture = textures[face.textureId[j] - 1];
+				glTexCoord2f(texture.tx, texture.ty);
+			}
+			if (face.normalVectorId[0] != 0) {
+				NormalVector normalVector = normalVectors[face.normalVectorId[j] - 1];
+				glNormal3f(normalVector.nx, normalVector.ny, normalVector.nz);
+			}
+			if (face.vertexId[0] != 0) {
+				Vertex vertex = vertexes[face.vertexId[j] - 1];
+				glVertex3f(vertex.x, vertex.y, vertex.z);
+			}
 		}
-		NormalVector normalVector = normalVectors[face.normalVectorId[0]-1];
-		glNormal3f(normalVector.nx, normalVector.ny, normalVector.nz);		
 		glEnd();
 	}
-	glFlush();
 }
 
 void Mesh::parse(const char* filename)
@@ -57,17 +59,55 @@ void Mesh::parse(const char* filename)
 			vertexes.push_back(*(new Vertex(x, y, z)));
 		}
 		else if (line[0] == 'f') {
-			for (int i = 0; i < line.size(); i++) {
-				if (line[i] == '/') {
+			int fcase = 1;
+			/*case1:f  1 2 3
+			  case2:f  1/3 2/5 3/4
+			  case3:f  1/3/4 2/5/6 3/4/2
+			  case4:f  1//4 2//6 3//2
+			*/
+			for (int i = 1; i < line.size(); i++) {
+				if(line[i]!=' '){
+					for(int j = i;j < line.size(); j++){
+						if (line[j] == ' ') break;
+						if(line[j]=='/'){
+							line[j] = ' ';
+							fcase++;
+							if(line[j+1]=='/'){
+								fcase = 4;
+								break;
+							}
+						}
+					}
+					break;
+				}
+			}
+			for(int i= 0;i< line.size();i++){
+				if(line[i]=='/'){
 					line[i] = ' ';
 				}
 			}
 			istringstream iss(line.substr(1));
 			Face *face = new Face();
-			for (int i = 0; i < 3; i++) {
-				iss >> face->vertexId[i];
-				iss >> face->textureId[i];
-				iss >> face->normalVectorId[i];
+			if(fcase == 1){
+				for (int i = 0; i < 3; i++) {
+					iss >> face->vertexId[i];
+				}
+			}else if(fcase == 2){
+				for (int i = 0; i < 3; i++) {
+					iss >> face->vertexId[i];
+					iss >> face->textureId[i];
+				}
+			}else if(fcase == 3){
+				for (int i = 0; i < 3; i++) {
+					iss >> face->vertexId[i];
+					iss >> face->textureId[i];
+					iss >> face->normalVectorId[i];
+				}
+			}else if(fcase ==4){
+				for (int i = 0; i < 3; i++) {
+					iss >> face->vertexId[i];
+					iss >> face->normalVectorId[i];
+				}
 			}
 			faces.push_back(*face);
 		}
