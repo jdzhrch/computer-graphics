@@ -13,7 +13,7 @@ static int pos_ground = -2;
 static float lose_vy = 2;
 static float v0 = 10;
 static const char* objfilename = "Eight.obj";
-static bool ifLoadModel = false;
+static bool ifLoadModel = true;
 Mesh mesh;
 enum Direction {
 	SIT = 0,
@@ -30,7 +30,7 @@ void init(void) {
 	direction = SIT;
 	mesh.parse(objfilename);
 	GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
-	glClearColor(1.0, 1.0, 1.0, 0.3);
+	glClearColor(1.0, 1.0, 1.0, 0.4);
 	glShadeModel(GL_SMOOTH);
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glEnable(GL_LIGHTING);
@@ -47,6 +47,7 @@ void display(void) {
 	glLoadIdentity();
 	glTranslated(0, y, 0);
 	if (ifLoadModel) {
+		dt = 0.01;
 		glRotatef(80.0f, 1.0f, 0.0f, 0.0f);	
 		mesh.draw();
 	}
@@ -56,7 +57,7 @@ void display(void) {
 	}
 	
 	if (direction == DOWN) {
-		y = y +vy*dt + 0.5*G*dt*dt; 
+		y = y +vy*dt - 0.5*G*dt*dt; 
 		vy = vy - G*dt;
 		if (y <= pos_ground) {
 			vy = 0 - vy;
@@ -72,7 +73,6 @@ void display(void) {
 		y = y + vy*dt-0.5*G*dt*dt; 
 		vy = vy - G*dt; 
 		if(vy <= 0){
-			vy = 0 - vy;
 			direction = DOWN;
 		}
 	}
@@ -90,17 +90,15 @@ void reshape(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
-void timer(int val)
-{
-	//t += 0.00001;
-	display();
-	glutTimerFunc(0.001, timer, 0);
-}
 void mouse(int button, int state, int x, int y)
 {
-	if(state == GLUT_UP){
-		vy = v0;
-		direction = UP;
+	if (state == GLUT_UP) {
+		if (button == GLUT_LEFT_BUTTON) {
+			vy = v0;
+			direction = UP;
+		}else if(button == GLUT_RIGHT_BUTTON){
+			ifLoadModel = !ifLoadModel;
+		}
 	}
 }
 int main(int argc, char** argv) {
@@ -108,57 +106,12 @@ int main(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(500, 500);
 	glutInitWindowPosition(450, 100);
-	glutCreateWindow("ball");
+	glutCreateWindow("自由落体 鼠标左键跳起 右键切换模型或球");
 	init();
 	glutDisplayFunc(display);
-	//glutTimerFunc(0.001, timer, 0);
 	glutReshapeFunc(reshape);
 	glutIdleFunc(idle);
 	glutMouseFunc(mouse);
 	glutMainLoop();
 	return 0;
 }
-/*#define GLUT_DISABLE_ATEXIT_HACK
-#include <stdafx.h>  
-#include <windows.h>  
-#include <cstdlib>  
-#include <glut.h>  
-static int ballsize = 100;
-void init(void)   
-{
-	GLfloat light_position[] = { 1.0, 1.0, 1.0, 0.0 };
-	glClearColor(1.0, 1.0, 1.0, 0.3); 
-	glShadeModel(GL_SMOOTH);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_DEPTH_TEST);
-}
-void display(void)
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glutSolidSphere(1.0, 1000, 1000);
-	glFlush();
-}
-void reshape(int w, int h)
-{
-	glViewport((w-ballsize)/2, (h-ballsize)/2, (GLsizei)ballsize, (GLsizei)ballsize);
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(-1.5, 1.5 , -1.5, 1.5, -10.0, 10.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-}
-int main(int argc, char** argv)
-{
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(500, 500);
-	glutInitWindowPosition(200, 100);
-	glutCreateWindow("ball");
-	init();
-	glutDisplayFunc(display);
-	glutReshapeFunc(reshape);
-	glutMainLoop();
-	return 0;
-	}*/
