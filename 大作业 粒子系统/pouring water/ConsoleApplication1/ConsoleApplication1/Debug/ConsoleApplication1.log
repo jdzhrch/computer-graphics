@@ -1,0 +1,10 @@
+﻿  源.cpp
+e:\github\proj\opengl-objloader\大作业 粒子系统\pouring water\consoleapplication1\consoleapplication1\源.cpp(20): warning C4838: 从“double”转换到“unsigned char”需要收缩转换
+  sph_point_buffer.cpp
+  sph_fluid_system.cpp
+  正在生成代码...
+  正在编译...
+  sph_grid_container.cpp
+  正在生成代码...
+  ConsoleApplication1.vcxproj -> E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\pouring water\ConsoleApplication1\Debug\ConsoleApplication1.exe
+  ConsoleApplication1.vcxproj -> E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\pouring water\ConsoleApplication1\Debug\ConsoleApplication1.pdb (Full PDB)

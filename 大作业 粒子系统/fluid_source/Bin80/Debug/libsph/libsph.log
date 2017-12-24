@@ -1,0 +1,27 @@
+﻿生成启动时间为 2017/12/23 22:14:15。
+     1>项目“E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\libsph\libsph.vcxproj”在节点 2 上(Build 个目标)。
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _LIB /D LIBSPH_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yc"sph_stdafx.h" /Fp"E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph\libsph.pch" /Fo"E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph\\" /Fd"E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt sph_stdafx.cpp
+         sph_stdafx.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _LIB /D LIBSPH_EXPORTS /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"sph_stdafx.h" /Fp"E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph\libsph.pch" /Fo"E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph\\" /Fd"E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt sph_fluid_system.cpp sph_grid_container.cpp sph_marching_cube.cpp sph_neighbor_table.cpp sph_point_buffer.cpp
+         sph_point_buffer.cpp
+         sph_neighbor_table.cpp
+         sph_marching_cube.cpp
+         sph_grid_container.cpp
+         sph_fluid_system.cpp
+         正在生成代码...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph.dll" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph.lib" /MACHINE:X86 /SAFESEH /DLL "E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph\sph_fluid_system.obj"
+         "E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph\sph_grid_container.obj"
+         "E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph\sph_marching_cube.obj"
+         "E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph\sph_neighbor_table.obj"
+         "E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph\sph_point_buffer.obj"
+         "E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph\sph_stdafx.obj"
+     1>sph_fluid_system.obj : warning LNK4075: 忽略“/EDITANDCONTINUE”(由于“/SAFESEH”规范)
+            正在创建库 E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph.lib 和对象 E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph.exp
+         libsph.vcxproj -> E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\Bin80\Debug\libsph.dll
+     1>已完成生成项目“E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\fluid_source\libsph\libsph.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:02.03

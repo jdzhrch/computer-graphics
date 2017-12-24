@@ -1,0 +1,4 @@
+﻿  ParticleSystem.cpp
+e:\github\proj\opengl-objloader\大作业 粒子系统\consoleapplication1\consoleapplication1\particlesystem.cpp(28): warning C4018: “<”: 有符号/无符号不匹配
+  ConsoleApplication1.vcxproj -> E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\ConsoleApplication1\Debug\ConsoleApplication1.exe
+  ConsoleApplication1.vcxproj -> E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\ConsoleApplication1\Debug\ConsoleApplication1.pdb (Full PDB)

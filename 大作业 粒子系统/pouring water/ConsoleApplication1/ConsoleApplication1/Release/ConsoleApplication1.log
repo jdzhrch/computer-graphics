@@ -1,0 +1,48 @@
+﻿  ObjLoader.cpp
+ObjLoader.cpp(9): warning C4018: “<”: 有符号/无符号不匹配
+ObjLoader.cpp(68): warning C4018: “<”: 有符号/无符号不匹配
+ObjLoader.cpp(70): warning C4018: “<”: 有符号/无符号不匹配
+ObjLoader.cpp(84): warning C4018: “<”: 有符号/无符号不匹配
+  Particle.cpp
+  ParticleSystem.cpp
+  sph_fluid_system.cpp
+sph_fluid_system.cpp(282): warning C4273: “getSPHSystem”: dll 链接不一致
+  e:\张荣城2\movie\consoleapplication1\consoleapplication1\sph_interface.h(40): note: 参见“getSPHSystem”的前一个定义
+  sph_grid_container.cpp
+  sph_marching_cube.cpp
+  sph_neighbor_table.cpp
+  sph_point_buffer.cpp
+  sph_stdafx.cpp
+  源.cpp
+源.cpp(20): warning C4838: 从“double”转换到“unsigned char”需要收缩转换
+LINK : fatal error C1001: 编译器中发生内部错误。
+  (编译器文件“f:\dd\vctools\compiler\utc\src\p2\main.c”，第 246 行)
+   要解决此问题，请尝试简化或更改上面所列位置附近的程序。
+  请选择 Visual C++
+  “帮助”菜单上的“技术支持”命令，或打开技术支持帮助文件来获得详细信息。
+    link!objf::ObjectCode::FCreateFromBytesW()+0xaab
+  
+  
+Release\ObjLoader.obj : fatal error LNK1000: Internal error during IMAGE::Pass1
+  
+    Version 14.00.23026.0
+  
+    ExceptionCode            = C0000005
+    ExceptionFlags           = 00000000
+    ExceptionAddress         = 6D17A2EB (6D170000) "E:\vs2015\VC\bin\msobj140.dll"
+    NumberParameters         = 00000002
+    ExceptionInformation[ 0] = 00000000
+    ExceptionInformation[ 1] = 001425EF
+  
+  CONTEXT:
+    Eax    = 003DE7FC  Esp    = 003DE7CC
+    Ebx    = 00000000  Ebp    = 003DE7D8
+    Ecx    = 002A07D0  Esi    = 001425EF
+    Edx    = 6D17143C  Edi    = 002A07D0
+    Eip    = 6D17A2EB  EFlags = 00010246
+    SegCs  = 00000023  SegDs  = 0000002B
+    SegSs  = 0000002B  SegEs  = 0000002B
+    SegFs  = 00000053  SegGs  = 0000002B
+    Dr0    = 00000000  Dr3    = 00000000
+    Dr1    = 00000000  Dr6    = 00000000
+    Dr2    = 00000000  Dr7    = 00000000
