@@ -41,7 +41,7 @@
 			{
 				for (float x = fluidBox.min.x; x <= fluidBox.max.x; x += spacing)
 				{
-					Particle2* p = m_pointBuffer.AddPointReuse();
+					sph_particle* p = m_pointBuffer.AddPointReuse();
 
 					p->pos.set(x, y, z);
 				}
@@ -61,7 +61,7 @@
 	//-----------------------------------------------------------------------------------------------------------------
 	void FluidSystem::_init(unsigned short maxPointCounts, const fBox3& wallBox, const fBox3& initFluidBox, const fVector3& gravity)
 	{
-		m_pointBuffer.reset(maxPointCounts);
+		m_pointBuffer = PointPool(maxPointCounts);
 
 		m_sphWallBox = wallBox;
 		m_gravityDir = gravity;
@@ -85,7 +85,7 @@
 
 		for (unsigned int i = 0; i<m_pointBuffer.size(); i++)
 		{
-			Particle2* pi = m_pointBuffer.get(i);
+			sph_particle* pi = m_pointBuffer.getParticle(i);
 
 			float sum = 0.f;
 			m_neighborTable.point_prepare(i);
@@ -100,7 +100,7 @@
 				int pndx = m_gridContainer.getGridData(gridCell[cell]);
 				while (pndx != -1)
 				{
-					Particle2* pj = m_pointBuffer.get(pndx);
+					sph_particle* pj = m_pointBuffer.getParticle(pndx);
 					if (pj == pi)
 					{
 						sum += pow(h2, 3.f);  //self
@@ -141,7 +141,7 @@
 
 		for (unsigned int i = 0; i<m_pointBuffer.size(); i++)
 		{
-			Particle2* pi = m_pointBuffer.get(i);
+			sph_particle* pi = m_pointBuffer.getParticle(i);
 
 			fVector3 accel_sum;
 			int neighborCounts = m_neighborTable.getNeighborCounts(i);
@@ -152,7 +152,7 @@
 				float r;
 				m_neighborTable.getNeighborInfo(i, j, neighborIndex, r);
 
-				Particle2* pj = m_pointBuffer.get(neighborIndex);
+				sph_particle* pj = m_pointBuffer.getParticle(neighborIndex);
 				//r(i)-r(j)
 				fVector3 ri_rj = (pi->pos - pj->pos)*m_unitScale;
 				//h-r
@@ -185,7 +185,7 @@
 
 		for (unsigned int i = 0; i<m_pointBuffer.size(); i++)
 		{
-			Particle2* p = m_pointBuffer.get(i);
+			sph_particle* p = m_pointBuffer.getParticle(i);
 
 			// Compute Acceleration		
 			fVector3 accel = p->accel;

@@ -1,5 +1,4 @@
-#ifndef XXXX_H  
-#define XXXX_H 
+#pragma once
 #include <stdio.h>
 #include <tchar.h>
 #include <time.h>
@@ -38,4 +37,3 @@ struct float_3
 };
 
 
-#endif

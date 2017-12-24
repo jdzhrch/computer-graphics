@@ -1,5 +1,5 @@
 #include<stdlib.h>  
-#include"particle.h"  
+#include"Particle.h"  
 #define dt 0.5
 float particleSize = rand() % 15 * 0.02f;
 void particle::draw() {

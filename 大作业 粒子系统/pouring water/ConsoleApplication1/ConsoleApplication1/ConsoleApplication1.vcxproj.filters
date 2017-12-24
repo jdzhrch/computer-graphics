@@ -36,10 +36,7 @@
     <ClCompile Include="sph_neighbor_table.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="sph_point_buffer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticlePool.cpp">
+    <ClCompile Include="sph_ParticlePool.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,19 +59,16 @@
     <ClInclude Include="sph_neighbor_table.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="sph_point_buffer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="basicElement.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ParticleSystem.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ParticlePool.h">
+    <ClInclude Include="sph_particle.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Particle2.h">
+    <ClInclude Include="sph_ParticlePool.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
