@@ -71,8 +71,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files (x86)\Windows Kits\10\Include\10.0.10150.0\ucrt;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86;$(LibPath);E:\vs2015\VC\lib</LibraryPath>
+    <IncludePath>C:\Program Files (x86)\Windows Kits\10\Include\10.0.10150.0\ucrt;$(IncludePath);C:\Program Files (x86)\OpenMesh 6.3\include</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\Windows Kits\8.1\Lib\winv6.3\um\x86;$(LibPath);E:\vs2015\VC\lib;C:\Program Files (x86)\OpenMesh 6.3\lib\</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -89,12 +89,13 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>GLUT_BUILDING_LIB;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_USE_MATH_DEFINES;_SCL_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glut32.lib;Opengl32.lib;Glu32.lib;OpenMeshCored.lib;OpenMeshToolsd.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

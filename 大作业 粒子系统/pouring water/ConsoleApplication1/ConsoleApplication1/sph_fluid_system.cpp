@@ -13,7 +13,7 @@
 
 		m_boundartStiffness = 10000.f;
 		m_boundaryDampening = 256.f;
-		m_speedLimiting = 200.f;
+		m_speedLimiting = 100.f;
 
 		//Poly6 Kernel
 		m_kernelPoly6 = 315.0f / (64.0f * 3.141592f * pow(m_smoothRadius, 9));
