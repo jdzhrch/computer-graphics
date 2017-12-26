@@ -18,15 +18,6 @@
     <ClCompile Include="源.cpp">
       <Filter>资源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Particle.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ParticleSystem.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ObjLoader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="sph_fluid_system.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -41,12 +32,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Particle.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ObjLoader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="sph_fluid_system.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -62,18 +47,11 @@
     <ClInclude Include="basicElement.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ParticleSystem.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="sph_particle.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="sph_ParticlePool.h">
       <Filter>头文件</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
 </Project>

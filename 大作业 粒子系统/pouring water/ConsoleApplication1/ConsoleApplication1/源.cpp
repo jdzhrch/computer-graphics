@@ -2,7 +2,6 @@
 #define GLUT_DISABLE_ATEXIT_HACK 
 
 #include <stdlib.h>       
-#include"ParticleSystem.h"    
 #include "sph_fluid_system.h"
 
 #include <OpenMesh/Core/IO/MeshIO.hh>  
