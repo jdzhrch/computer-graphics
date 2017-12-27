@@ -6,9 +6,21 @@ void Model::parse(){
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST); //用来开启深度缓冲区的功能，启动后OPengl就可以跟踪Z轴上的像素，那么它只有在前面没有东西的情况下才会绘制这个像素，在绘制3d时，最好启用，视觉效果会比较真实
 							 // ------------------- Lighting  
-	glEnable(GL_LIGHTING); // 如果enbale那么就使用当前的光照参数去推导顶点的颜色
-	glEnable(GL_LIGHT0); //第一个光源，而GL_LIGHT1表示第二个光源
-						 // ------------------- Display List  
+	{
+		GLfloat light_position[] = { 20.0f, 100.0f, 100.0f, 1.0f };
+		GLfloat light_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		GLfloat light_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		GLfloat light_specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+		glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+		glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+
+		//开启灯光  
+		glEnable(GL_LIGHT0);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_DEPTH_TEST);
+	}
 	showFaceList = glGenLists(1);
 	showWireList = glGenLists(1);
 	int temp = mesh.n_edges();

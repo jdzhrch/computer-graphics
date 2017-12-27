@@ -32,11 +32,11 @@ float eye[] = { 0, 0, 0 };
 void resetSPHSystem(void)
 {
 	float_3 wall_min = { -25, 00, -25 };
-	float_3 wall_max = { 25, 50, 25 };
-	float_3 fluid_min = { -15, 15, -15 };
-	float_3 fluid_max = { 15, 35, 15 };
+	float_3 wall_max = { 25, 500, 25 };
+	float_3 fluid_min = { -5, 5, -5 };
+	float_3 fluid_max = { 5, 11, 5 };
 	float_3 gravity = { 0.0, -9.8f, 0 };
-	g_pSPHSystem->init(1024 * 2, &wall_min, &wall_max, &fluid_min, &fluid_max, &gravity);
+	g_pSPHSystem->init(4096 * 2, &wall_min, &wall_max, &fluid_min, &fluid_max, &gravity);
 }
 
 void initGL()
@@ -46,6 +46,7 @@ void initGL()
 	model_particle.readfile(particleObjFileName);
 	model_particle.parse();
 	resetSPHSystem();
+	gluLookAt(eye[0], eye[1], eye[2], center[0], center[1], center[2], 0, 0, 1);
 }
 
 void reshape(GLint w, GLint h)
@@ -101,10 +102,28 @@ void mySpecial(int key, int x, int y) {
 
 void display()
 {
-	glClearColor(1.0, 1.0, 1.0, 1.0);
+	float disturbance = (rand() & 100-50) / 100.0;
+	fVector3 pos(disturbance*5, 100+disturbance * 5, disturbance * 5);
+		g_pSPHSystem->_addParticle(pos);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //清理颜色和深度缓存     
-	gluLookAt(eye[0], eye[1], eye[2], center[0], center[1], center[2], 0, 0, 1);
+	//gluLookAt(eye[0], eye[1], eye[2], center[0], center[1], center[2], 0, 0, 1);
 
+	{
+		GLfloat light_position[] = { 200.0f, 100.0f, 400.0f, 0.0f };
+		GLfloat light_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		GLfloat light_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		GLfloat light_specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+		glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+		glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+
+		//开启灯光  
+		glEnable(GL_LIGHT0);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_DEPTH_TEST);
+	}
 	//draw sink
 	glPushMatrix();
 	glLoadIdentity();
@@ -133,35 +152,20 @@ void display()
 	const float_3* p = g_pSPHSystem->getPointBuf();
 	unsigned int stride = g_pSPHSystem->getPointStride();
 
-	{
-		GLfloat light_position[] = { 20.0f, 100.0f, 100.0f, 1.0f }; 
-		GLfloat light_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f }; 
-		GLfloat light_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f }; 
-		GLfloat light_specular[] = { 0.0f, 0.0f, 0.0f, 1.0f }; 
-		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-		glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-		glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-
-		//开启灯光  
-		glEnable(GL_LIGHT0);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_DEPTH_TEST);
-	}
+	
 
 	{
-		GLfloat mat_ambient[] = { 0.0f, 0.0f, 1.0f, 1.0f };
+		GLfloat mat_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		GLfloat mat_diffuse[] = { 89.0 / 255, 195.0 / 255, 226.0 / 255,1 }; 
-		GLfloat mat_specular[] = { 0.0f, 1.0f, 0.0f, 1.0f }; 
-		GLfloat mat_emission[] = { 0.0f, 0.0f, 0.0f, 1.0f };  
-		GLfloat mat_shininess = 30.0f;
+		GLfloat mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f }; 
+		//GLfloat mat_emission[] = { 0.0f, 0.0f, 0.0f, 1.0f };  
+		//GLfloat mat_shininess = 30.0f;
 		glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
 		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-		glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
-		glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess);
+		//glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
+		//glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess);
 	}
-
 	if (!ifUseModel) {//点作为粒子
 		glEnable(GL_POINT_SMOOTH);//点会画成圆，不开是矩形
 		glPointSize(40.0f);
@@ -181,7 +185,8 @@ void display()
 		{
 			glPushMatrix();
 			glTranslatef(p->x, p->y, p->z);
-			model_particle.draw();
+			//model_particle.draw();
+			glutSolidSphere(4, 5, 5);
 			glPopMatrix();
 			p = (const float_3*)(((const char*)p) + stride);
 		}
@@ -189,13 +194,12 @@ void display()
 	glPopMatrix();
 	glFlush();
 
-	
-
 	glutSwapBuffers();	//这是Opengl中用于实现双缓存技术的一个重要函数
 }
 
 void idle(void)
 {
+
 	glutPostRedisplay();
 }
 

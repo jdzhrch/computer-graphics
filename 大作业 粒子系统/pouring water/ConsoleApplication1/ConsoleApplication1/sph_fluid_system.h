@@ -27,6 +27,8 @@ public:
 	/** 逻辑帧 */
 	virtual void tick(void);
 
+	void _addParticle(const fVector3 pos);
+
 private:
 	/** 初始化系统
 	*/
@@ -41,6 +43,9 @@ private:
 	void _addFluidVolume(const fBox3& fluidBox, float spacing);
 
 private:
+
+	float deltaTime = 0.003f;
+
 	PointPool m_pointBuffer;
 	GridContainer m_gridContainer;
 	NeighborTable m_neighborTable;

@@ -48,6 +48,11 @@
 		}
 	}
 
+	void FluidSystem::_addParticle(const fVector3 pos){
+		sph_particle* p = m_pointBuffer.AddPointReuse();
+
+		p->pos.set(pos.x, pos.y, pos.z);
+	}
 	//-----------------------------------------------------------------------------------------------------------------
 	void FluidSystem::tick(void)
 	{
@@ -168,6 +173,8 @@
 				//m_kernelViscosity = 45.0f/(3.141592f * h^6);
 				float vterm = m_kernelViscosity * m_viscosity * h_r * m_pointMass / (pi->density * pj->density);
 				accel_sum += (pj->velocity_eval - pi->velocity_eval)*vterm;
+
+				accel_sum += pj->velocity_eval / deltaTime *0.001;
 			}
 
 			pi->accel = accel_sum;
@@ -177,8 +184,6 @@
 	//-----------------------------------------------------------------------------------------------------------------
 	void FluidSystem::_advance(void)
 	{
-		//fixed delta time per frame
-		float deltaTime = 0.003f;
 
 		float SL2 = m_speedLimiting*m_speedLimiting;
 
