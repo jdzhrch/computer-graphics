@@ -1,7 +1,5 @@
 ﻿  源.cpp
 e:\github\proj\opengl-objloader\大作业 粒子系统\pouring water\consoleapplication1\consoleapplication1\源.cpp(25): warning C4838: 从“double”转换到“const float”需要收缩转换
-e:\github\proj\opengl-objloader\大作业 粒子系统\pouring water\consoleapplication1\consoleapplication1\源.cpp(159): warning C4838: 从“double”转换到“GLfloat”需要收缩转换
-  sph_fluid_system.cpp
-  正在生成代码...
+e:\github\proj\opengl-objloader\大作业 粒子系统\pouring water\consoleapplication1\consoleapplication1\源.cpp(165): warning C4838: 从“double”转换到“GLfloat”需要收缩转换
   ConsoleApplication1.vcxproj -> E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\pouring water\ConsoleApplication1\Debug\ConsoleApplication1.exe
   ConsoleApplication1.vcxproj -> E:\GitHub\proj\opengl-objLoader\大作业 粒子系统\pouring water\ConsoleApplication1\Debug\ConsoleApplication1.pdb (Full PDB)

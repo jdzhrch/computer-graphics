@@ -33,6 +33,7 @@ void Model::parse() {
 	for (MyMesh::FaceIter f_it = mesh.faces_begin(); f_it != mesh.faces_end(); ++f_it) {
 		glBegin(GL_TRIANGLES);
 		for (MyMesh::FaceVertexIter fv_it = mesh.fv_iter(*f_it); fv_it.is_valid(); ++fv_it) {
+			glColor4f(23 / 255, 354 / 255, 13 / 255, 0.5);
 			glNormal3fv(mesh.normal(*fv_it).data());
 			glVertex3fv(mesh.point(*fv_it).data());
 		}

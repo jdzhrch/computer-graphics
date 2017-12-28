@@ -3,6 +3,7 @@
 #include "sph_ParticlePool.h"
 #include "sph_grid_container.h"
 #include "sph_neighbor_table.h"
+#include <iostream>  
 
 class FluidSystem
 {
@@ -28,6 +29,11 @@ public:
 	virtual void tick(void);
 
 	void _addParticle(const fVector3 pos);
+
+	void _setGravity(const fVector3 gravity);
+	fVector3 _getGravity(){
+		return m_gravityDir;
+	}
 
 private:
 	/** 初始化系统

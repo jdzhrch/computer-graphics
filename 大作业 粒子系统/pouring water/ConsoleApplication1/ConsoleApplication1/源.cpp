@@ -32,11 +32,11 @@ float eye[] = { 0, 0, 0 };
 void resetSPHSystem(void)
 {
 	float_3 wall_min = { -25, 00, -25 };
-	float_3 wall_max = { 25, 500, 25 };
-	float_3 fluid_min = { -5, 5, -5 };
-	float_3 fluid_max = { 5, 11, 5 };
+	float_3 wall_max = { 25, 50, 25 };
+	float_3 fluid_min = { -15, 15, -15 };
+	float_3 fluid_max = { 15, 35, 15 };
 	float_3 gravity = { 0.0, -9.8f, 0 };
-	g_pSPHSystem->init(4096 * 2, &wall_min, &wall_max, &fluid_min, &fluid_max, &gravity);
+	g_pSPHSystem->init(512 * 2, &wall_min, &wall_max, &fluid_min, &fluid_max, &gravity);
 }
 
 void initGL()
@@ -83,6 +83,7 @@ void mouseMove(int x, int y) {
 		xRotate += y - Oldy;
 		glutPostRedisplay();
 		Oldy = y;
+		std::cout << xRotate << "  " << yRotate << std::endl;
 	}
 }
 
@@ -102,14 +103,19 @@ void mySpecial(int key, int x, int y) {
 
 void display()
 {
-	float disturbance = (rand() & 100-50) / 100.0;
-	fVector3 pos(disturbance*5, 100+disturbance * 5, disturbance * 5);
-		g_pSPHSystem->_addParticle(pos);
+	/*
+	用于原本设计的倒水
+	fVector3 pos((rand() & 100 - 50) / 100.0 *5, 100+ (rand() & 100 - 50) / 100.0 * 5, (rand() & 100 - 50) / 100.0 * 5);
+	g_pSPHSystem->_addParticle(pos);
+	*/
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //清理颜色和深度缓存     
-	//gluLookAt(eye[0], eye[1], eye[2], center[0], center[1], center[2], 0, 0, 1);
 
-	{
+	//由于渲染是独立的，重力会随glrotatef旋转，因此需要把它转回原位。此处由于sin采用弧度制，glrotatef采用角度制，被卡了很久。
+	fVector3 gravity(-9.8 * sin(xRotate / 180 * PI) * sin(yRotate / 180 * PI), -9.8 * cos(xRotate/180 * PI), 9.8 * sin(xRotate / 180 * PI) * cos(yRotate / 180 * PI));
+	g_pSPHSystem->_setGravity(gravity);
+	
+	{//灯光
 		GLfloat light_position[] = { 200.0f, 100.0f, 400.0f, 0.0f };
 		GLfloat light_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		GLfloat light_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -124,6 +130,7 @@ void display()
 		glEnable(GL_LIGHTING);
 		glEnable(GL_DEPTH_TEST);
 	}
+
 	//draw sink
 	glPushMatrix();
 	glLoadIdentity();
@@ -133,7 +140,6 @@ void display()
 	glRotatef(yRotate, 0.0f, 1.0f, 0.0f);
 	glTranslatef(0.0f, -5.2f, -3.0f);
 	glScalef(0.26 * scale, 0.26 * scale, 0.33 * scale);
-	//glColor3f(0, 0, 0);
 	model.draw();
 	glPopMatrix();
 	glFlush();
@@ -166,6 +172,15 @@ void display()
 		//glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
 		//glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess);
 	}
+	/*
+	绘制重力向量 用于检验
+	glBegin(GL_LINES);
+	glColor3f(1, 1, 1);
+	glVertex3f(0, 0, 0);
+	fVector3 grav = g_pSPHSystem->_getGravity();
+	glVertex3f(grav.x*1000, grav.y*1000, grav.z*1000);
+	glEnd();
+	*/
 	if (!ifUseModel) {//点作为粒子
 		glEnable(GL_POINT_SMOOTH);//点会画成圆，不开是矩形
 		glPointSize(40.0f);

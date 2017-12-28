@@ -23,3 +23,12 @@ sph_particle* PointPool::AddPointReuse(void)
 	return point;
 }
 
+sph_particle* PointPool::AddPoint(fVector3 pos)
+{
+	//a new point
+	sph_particle* point = pp_particleBuffer + pp_curNum;
+	sph_particle p;
+	*point = p;
+	pp_curNum++;
+	return point;
+}

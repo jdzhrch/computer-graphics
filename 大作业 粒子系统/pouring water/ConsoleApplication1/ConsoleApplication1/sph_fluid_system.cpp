@@ -49,9 +49,13 @@
 	}
 
 	void FluidSystem::_addParticle(const fVector3 pos){
-		sph_particle* p = m_pointBuffer.AddPointReuse();
+		sph_particle* p = m_pointBuffer.AddPoint(pos);
 
 		p->pos.set(pos.x, pos.y, pos.z);
+	}
+
+	void FluidSystem::_setGravity(const fVector3 gravity){
+		m_gravityDir = gravity;
 	}
 	//-----------------------------------------------------------------------------------------------------------------
 	void FluidSystem::tick(void)
@@ -174,7 +178,8 @@
 				float vterm = m_kernelViscosity * m_viscosity * h_r * m_pointMass / (pi->density * pj->density);
 				accel_sum += (pj->velocity_eval - pi->velocity_eval)*vterm;
 
-				accel_sum += pj->velocity_eval / deltaTime *0.001;
+				//动量转换为冲量
+				//accel_sum +=(pj->velocity_eval - pi->velocity_eval) / deltaTime *0.001;
 			}
 
 			pi->accel = accel_sum;
