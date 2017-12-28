@@ -9,16 +9,23 @@
 int mousestate = 0; //鼠标当前的状态
 GLfloat Oldx = 0.0; // 点击之前的位置
 GLfloat Oldy = 0.0;
-//与实现角度大小相关的参数，只需要两个就可以完成
+//与实现角度大小相关的参数
 float xRotate = 0.0f;
 float yRotate = 0.0f;
 float scale = 0.38;
+//与实现位置移动有关的参数
+float room_x = 0.0;
+float room_y = 0.0;
+float water_x = 0.0;
+float water_y = 0.0;
+//灯亮暗程度
+float light_intensity = 1;
 
 Model model;
 Model model_particle;
 
 //Mesh *mesh;
-const char * modelObjFileName = "model_sink/file.obj";
+const char * modelObjFileName = "model/room/House.obj";
 const char * particleObjFileName = "Cube.obj";
 bool ifUseModel = false;				//是否使用模型作为粒子
 
@@ -83,20 +90,69 @@ void mouseMove(int x, int y) {
 		xRotate += y - Oldy;
 		glutPostRedisplay();
 		Oldy = y;
-		std::cout << xRotate << "  " << yRotate << std::endl;
 	}
 }
 
-void mySpecial(int key, int x, int y) {
+void keyboard(unsigned char key, int x, int y){
 	switch (key) {
-	case GLUT_KEY_UP:
-		scale += 0.01;
+	case 27:// ESC
+		exit(0);
 		break;
-	case GLUT_KEY_DOWN:
-		if (scale > 0.2)scale -= 0.01;
+	//控制房间上下左右
+	case 119://w
+		room_y += 1;
+		cout << room_x << " room_x" << endl;
+		break;
+	case 115://s
+		room_y -= 1;
+		cout << room_x << " room_x" << endl;
+		break;
+	case 97://a
+		room_x -= 1;
+		break;
+	case 100://d
+		room_x += 1;
 		break;
 	default:
 		break;
+	}
+}
+
+void special(int key, int x, int y) {
+	switch (key) {
+		//控制远近
+		case 2://F2
+			if (scale > 0.2)
+				scale -= 0.1;
+			break;
+		case 3://F3
+			scale += 0.1;
+			cout << scale << " scale" << endl;
+			break;
+		//控制灯光亮暗
+		case 11://F11
+			if (light_intensity > 0)
+				light_intensity -= 0.1;
+			break;
+		case 12://F12
+			if (light_intensity < 1)
+				light_intensity += 0.1;
+			break;
+		//控制水上下左右
+		case GLUT_KEY_UP:
+			water_y += 1;
+			break;
+		case GLUT_KEY_DOWN:
+			water_y -= 1;
+			break;
+		case GLUT_KEY_LEFT:
+			water_x -= 1;
+			break;
+		case GLUT_KEY_RIGHT:
+			water_x += 1;
+			break;
+		default:
+			break;
 	}
 	glutPostRedisplay();
 }
@@ -111,15 +167,23 @@ void display()
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //清理颜色和深度缓存     
 
-	//由于渲染是独立的，重力会随glrotatef旋转，因此需要把它转回原位。此处由于sin采用弧度制，glrotatef采用角度制，被卡了很久。
+	//由于渲染是独立的，重力会随glrotatef旋转，因此需要把它转回原位。此处由于sin采用弧度制，glrotatef采用角度制，被卡了很久。助教说可以利用顶点变量，在变换后会自动变成变换后坐标。
 	fVector3 gravity(-9.8 * sin(xRotate / 180 * PI) * sin(yRotate / 180 * PI), -9.8 * cos(xRotate/180 * PI), 9.8 * sin(xRotate / 180 * PI) * cos(yRotate / 180 * PI));
 	g_pSPHSystem->_setGravity(gravity);
-	
+
+	//draw room
+	glPushMatrix();
+	glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glRotatef(xRotate, 1.0f, 0.0f, 0.0f); // 让物体旋转的函数 第一个参数是角度大小，后面的参数是旋转的法向量
+	glRotatef(yRotate, 0.0f, 1.0f, 0.0f);
+	glTranslatef(room_x, room_y-70.f, 0.f);
 	{//灯光
-		GLfloat light_position[] = { 200.0f, 100.0f, 400.0f, 0.0f };
-		GLfloat light_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-		GLfloat light_diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		GLfloat light_specular[] = { 0.0f, 0.0f, 0.0f, 1.0f };
+		GLfloat light_position[] = { 200.0f, 100.0f, 400.0f, 1.0f };
+		GLfloat light_ambient[] = { light_intensity, light_intensity, light_intensity, 1.0f };
+		GLfloat light_diffuse[] = { light_intensity, light_intensity, light_intensity, 1.0f };
+		GLfloat light_specular[] = { light_intensity, light_intensity, light_intensity, 1.0f };
 		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 		glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
 		glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
@@ -130,16 +194,7 @@ void display()
 		glEnable(GL_LIGHTING);
 		glEnable(GL_DEPTH_TEST);
 	}
-
-	//draw sink
-	glPushMatrix();
-	glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glRotatef(xRotate, 1.0f, 0.0f, 0.0f); // 让物体旋转的函数 第一个参数是角度大小，后面的参数是旋转的法向量
-	glRotatef(yRotate, 0.0f, 1.0f, 0.0f);
-	glTranslatef(0.0f, -5.2f, -3.0f);
-	glScalef(0.26 * scale, 0.26 * scale, 0.33 * scale);
+	glScalef(100 * scale, 100 * scale, 100 * scale);
 	model.draw();
 	glPopMatrix();
 	glFlush();
@@ -151,14 +206,12 @@ void display()
 	glLoadIdentity();
 	glRotatef(xRotate, 1.0f, 0.0f, 0.0f); // 让物体旋转的函数 第一个参数是角度大小，后面的参数是旋转的法向量
 	glRotatef(yRotate, 0.0f, 1.0f, 0.0f);
-	glTranslatef(0.0f, 0.0f, 0.0f);
+	glTranslatef(water_x, water_y, 0.0f);
 	glScalef(scale, scale, scale); // 缩放
 
 	g_pSPHSystem->tick();
 	const float_3* p = g_pSPHSystem->getPointBuf();
 	unsigned int stride = g_pSPHSystem->getPointStride();
-
-	
 
 	{
 		GLfloat mat_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -230,8 +283,9 @@ int main(int argc, char** argv)
 
 	initGL();
 	glutMouseFunc(mouse);
-	glutMotionFunc(mouseMove); // 鼠标移动的时候的函数
-	glutSpecialFunc(&mySpecial);
+	glutMotionFunc(mouseMove);
+	glutSpecialFunc(&special);
+	glutKeyboardFunc(&keyboard);
 	glutReshapeFunc(&reshape);
 	glutDisplayFunc(&display);
 	glutIdleFunc(&idle);
