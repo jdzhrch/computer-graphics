@@ -33,8 +33,8 @@ const float water_color[4] = { 89.0 / 255, 195.0 / 255, 226.0 / 255,0.1 };
 FluidSystem*					g_pSPHSystem = 0;
 
 //йс╣Ц      
-float center[] = { 30, 0, 0 };
-float eye[] = { 0, 0, 0 };
+float center[] = { 0, 0, 0 };
+float eye[] = { 1, 1, 1 };
 
 void resetSPHSystem(void)
 {
