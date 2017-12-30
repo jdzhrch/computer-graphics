@@ -6,7 +6,6 @@
 #include <math.h>
 #include <Windows.h>
 #include <string>
-using namespace std;
 typedef OpenMesh::TriMesh_ArrayKernelT<> MyMesh;
 class Model
 {
@@ -21,7 +20,7 @@ class Model
 	bool showFlatlines = false;
 public:
 	void draw();
-	void readfile(string filename);
+	void readfile(std::string filename);
 	void parse();
 	Model();
 	~Model();

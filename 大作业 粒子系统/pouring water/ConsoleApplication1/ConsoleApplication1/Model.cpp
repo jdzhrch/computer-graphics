@@ -43,24 +43,24 @@ void Model::parse() {
 }
 
 // 读取文件的函数
-void Model::readfile(string file) {
+void Model::readfile(std::string file) {
 	// 请求顶点法线 vertex normals
 	mesh.request_vertex_normals();
 	//如果不存在顶点法线，则报错 
 	if (!mesh.has_vertex_normals())
 	{
-		cout << "错误：标准定点属性 “法线”不存在" << endl;
+		std::cout << "错误：标准定点属性 “法线”不存在" << std::endl;
 		return;
 	}
 	// 如果有顶点发现则读取文件 
 	OpenMesh::IO::Options opt;
 	if (!OpenMesh::IO::read_mesh(mesh, file, opt))
 	{
-		cout << "无法读取文件:" << file << endl;
+		std::cout << "无法读取文件:" << file << std::endl;
 		return;
 	}
-	else cout << "成功读取文件:" << file << endl;
-	cout << endl; // 为了ui显示好看一些
+	else std::cout << "成功读取文件:" << file << std::endl;
+	std::cout << std::endl; // 为了ui显示好看一些
 				  //如果不存在顶点法线，则计算出
 	if (!opt.check(OpenMesh::IO::Options::VertexNormal))
 	{

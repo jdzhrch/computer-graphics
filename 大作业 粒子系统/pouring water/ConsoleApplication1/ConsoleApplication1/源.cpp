@@ -2,6 +2,7 @@
 #define GLUT_DISABLE_ATEXIT_HACK 
 
 #include <stdlib.h>       
+#include "androidServer.h"	//<WinSock2.h>与openmesh冲突（应该是openmesh里有ws2def.h）将include顺序换一下就好了
 #include "sph_fluid_system.h"
 #include "Model.h"
 
@@ -25,7 +26,7 @@ Model model;
 Model model_particle;
 
 //Mesh *mesh;
-const char * modelObjFileName = "model/room/House.obj";
+const char * modelObjFileName = "model/room/Hosuse.obj";
 const char * particleObjFileName = "Cube.obj";
 bool ifUseModel = false;				//是否使用模型作为粒子
 
@@ -101,11 +102,11 @@ void keyboard(unsigned char key, int x, int y){
 	//控制房间上下左右
 	case 119://w
 		room_y += 1;
-		cout << room_x << " room_x" << endl;
+		std::cout << room_x << " room_x" << std::endl;
 		break;
 	case 115://s
 		room_y -= 1;
-		cout << room_x << " room_x" << endl;
+		std::cout << room_x << " room_x" << std::endl;
 		break;
 	case 97://a
 		room_x -= 1;
@@ -127,7 +128,7 @@ void special(int key, int x, int y) {
 			break;
 		case 3://F3
 			scale += 0.1;
-			cout << scale << " scale" << endl;
+			std::cout << scale << " scale" << std::endl;
 			break;
 		//控制灯光亮暗
 		case 11://F11
@@ -271,6 +272,101 @@ void idle(void)
 	glutPostRedisplay();
 }
 
+
+void startServer() {
+	short port;
+
+	port = 9400;
+	WSADATA wsa;
+
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+	{
+		printf("socket init error");
+		exit(-1);
+	}
+
+	SOCKET serverSocket;
+
+	if ((serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) == INVALID_SOCKET)
+	{
+		printf("创建套接字失败！");
+		exit(-1);
+	}
+
+	struct sockaddr_in serverAddress;
+	memset(&serverAddress, 0, sizeof(sockaddr_in));
+	serverAddress.sin_family = AF_INET;
+	serverAddress.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
+	serverAddress.sin_port = htons(port);
+
+	if (bind(serverSocket, (sockaddr*)&serverAddress, sizeof(serverAddress)) == SOCKET_ERROR)
+	{
+		printf("socket port error:%d", port);
+		exit(-1);
+	}
+
+
+	if (listen(serverSocket, SOMAXCONN) == SOCKET_ERROR)
+	{
+		printf("listen error");
+		exit(-1);
+	}
+	printf("Server 9400 is listening......\n");
+	SOCKET clientSocket;
+	struct sockaddr_in clientAddress;
+
+	memset(&clientAddress, 0, sizeof(clientAddress));
+	int addrlen = sizeof(clientAddress);
+
+	if ((clientSocket = accept(serverSocket, (sockaddr*)&clientAddress, &addrlen)) == INVALID_SOCKET)
+	{
+		printf("link error");
+		exit(-1);
+	}
+
+	char buf[4096];
+
+	while (1)
+	{
+		int bytes = recv(clientSocket, buf, sizeof(buf), 0);
+
+		/*    if ((bytes=recv(clientSocket,buf,sizeof(buf),0))==SOCKET_ERROR)
+		{
+		printf("data error");
+		exit(-1);
+		}*/
+
+		buf[bytes] = '\0';
+		//printf("Message from %s:\n %s\n", inet_ntoa(clientAddress.sin_addr), buf);
+		//    if(send(clientSocket,buf,bytes,0)==SOCKET_ERROR)
+		//    {
+		//        printf("发送数据失败！");
+		////        exit(-1);
+		//    }
+		std::string str(buf);
+		std::istringstream is(str);
+		std::string tmp;
+		if (buf[0] == 's') {
+			is >> tmp;
+			is >> tmp;
+			xRotate += atof(tmp.c_str());
+			is >> tmp;
+			yRotate += atof(tmp.c_str());
+		}
+		else {
+			is >> tmp;
+			xRotate += atof(tmp.c_str());
+			is >> tmp;
+			yRotate += atof(tmp.c_str());
+		}
+		std::cout << "Message from" << inet_ntoa(clientAddress.sin_addr) << xRotate << " " << yRotate << std::endl;
+
+	}
+
+	WSACleanup();
+	exit(-1);
+}
+
 int main(int argc, char** argv)
 {
 	static FluidSystem s_theSystem;
@@ -290,6 +386,9 @@ int main(int argc, char** argv)
 	glutDisplayFunc(&display);
 	glutIdleFunc(&idle);
 
+	std::thread task_server(&startServer);//非静态成员引用必须与特定对象相对 因此要将函数声明为static
+	task_server.detach();
 	glutMainLoop();
+
 	return 0;
 }
