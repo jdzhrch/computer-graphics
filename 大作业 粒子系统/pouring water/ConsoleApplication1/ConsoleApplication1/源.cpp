@@ -8,6 +8,7 @@
 #include "androidServer.h"	//<WinSock2.h>与openmesh冲突（应该是openmesh里有ws2def.h）将include顺序换一下就好了
 #include "sph_fluid_system.h"
 #include "Model.h"
+#include "texture.h"
 
 //鼠标交互有关的
 int mousestate = 0; //鼠标当前的状态
@@ -28,10 +29,12 @@ float light_intensity = 1;
 Model model;
 Model model_particle;
 
-//Mesh *mesh;
+GLuint texture[1];
+
 const char * modelObjFileName = "model/room/Hosuse.obj";
 const char * particleObjFileName = "Cube.obj";
-bool ifUseModel = false;				//是否使用模型作为粒子
+const char * textureFileName = "waterBall.jpg";
+int particleShowMode = 0;				//0：点表示粒子；1：点表示粒子，加载纹理；2：加载模型表示粒子
 
 const float water_color[4] = { 89.0 / 255, 195.0 / 255, 226.0 / 255,0.3f };
 FluidSystem*					g_pSPHSystem = 0;
@@ -58,6 +61,7 @@ void initGL()
 	model_particle.parse();
 	resetSPHSystem();
 	gluLookAt(eye[0], eye[1], eye[2], center[0], center[1], center[2], 0, 0, 1);
+	BuildTexture(textureFileName, texture[0]);
 	//启用混合 为了透明效果
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
@@ -127,6 +131,10 @@ void keyboard(unsigned char key, int x, int y){
 
 void special(int key, int x, int y) {
 	switch (key) {
+		case 1://F1 切换粒子表示模式
+			particleShowMode++;
+			if (particleShowMode == 4)particleShowMode = 0;
+			break;
 		//控制远近
 		case 2://F2
 			if (scale > 0.2)
@@ -191,7 +199,7 @@ void display()
 	glTranslatef(room_x, room_y-40.f, 0.f);
 	//灯光
 	{
-		GLfloat light_position[] = { 200.0f, 100.0f, 400.0f, 1.0f };
+		GLfloat light_position[] = { 200.0f, 200.0f, -300.0f, 1.0f };
 		GLfloat light_ambient[] = { light_intensity, light_intensity, light_intensity, 1.0f };
 		GLfloat light_diffuse[] = { light_intensity, light_intensity, light_intensity, 1.0f };
 		GLfloat light_specular[] = { light_intensity, light_intensity, light_intensity, 1.0f };
@@ -235,14 +243,15 @@ void display()
 	glVertex3f(grav.x*1000, grav.y*1000, grav.z*1000);
 	glEnd();
 	*/
-	if (!ifUseModel) {//点作为粒子
+	if (particleShowMode == 0) {
+		//0：点表示粒子；
 		glDisable(GL_LIGHTING);
 		glEnable(GL_POINT_SMOOTH);//点会画成圆，不开是矩形
 		glPointSize(40.0f);
 		glBegin(GL_POINTS);
 		glColor4fv(water_color);			//水蓝色	
 		//glScalef(10.0, 10.0, 10.0);
-		for (unsigned int n = 0; n<g_pSPHSystem->getPointCounts(); n++)
+		for (unsigned int n = 0; n < g_pSPHSystem->getPointCounts(); n++)
 		{
 			glVertex3f(p->x, p->y, p->z);
 			p = (const float_3*)(((const char*)p) + stride);
@@ -251,7 +260,38 @@ void display()
 		glDisable(GL_POINT_SMOOTH);
 		glEnable(GL_LIGHTING);
 	}
-	else {//模型作为粒子
+	else if(particleShowMode == 1){
+		//1：点表示粒子，加载纹理；
+		glDisable(GL_LIGHTING);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, texture[0]);  //选择纹理texture[status]       
+		glBegin(GL_QUADS);
+		for (unsigned int n = 0; n < g_pSPHSystem->getPointCounts(); n++)
+		{
+			const GLfloat x1 = p->x - 0.5, x2 = p->x + 0.5;
+			const GLfloat y1 = p->y - 0.5, y2 = p->y + 0.5;
+			const GLfloat z1 = p->z - 0.5, z2 = p->z + 0.5;
+			const GLfloat point[6][4][3] = { { { x1,y1,z1 },{ x2,y1,z1 },{ x2,y2,z1 },{ x1,y2,z1 } },
+			{ { x1, y1, z2 },{ x2,y1,z2 },{ x2,y2,z2 },{ x1,y2,z2 } },
+			{ { x1,y1,z1 },{ x2,y1,z1 },{ x1, y1, z2 },{ x2,y1,z2 } },
+			{ { x2,y2,z1 },{ x1,y2,z1 },{ x2,y2,z2 },{ x1,y2,z2 } },
+			{ { x1,y1,z1 },{ x1,y2,z1 },{ x1, y1, z2 },{ x1,y2,z2 } },
+			{ { x2,y1,z1 },{ x2,y2,z1 },{ x2,y1,z2 },{ x2,y2,z2 } } };
+			const GLfloat dir[4][2] = { { 0,0 },{ 1,0 },{ 1,1 },{ 0,1 } };
+			for (int j = 0; j < 6; j++) {
+				for (int i = 0; i < 4; i++) {
+					glTexCoord2fv(dir[i]);
+					glVertex3fv(point[j][i]);
+				}
+			}
+			p = (const float_3*)(((const char*)p) + stride);
+		}
+		glEnd();
+		glDisable(GL_TEXTURE_2D);
+		glEnable(GL_LIGHTING);
+	}
+	else {
+		//2：加载模型表示粒子
 		for (unsigned int n = 0; n<g_pSPHSystem->getPointCounts(); n++)
 		{
 			{
