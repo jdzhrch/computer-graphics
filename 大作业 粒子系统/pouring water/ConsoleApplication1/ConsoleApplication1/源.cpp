@@ -1,3 +1,6 @@
+/*
+考虑蓝牙通信
+*/
 #define _CRT_SECURE_NO_WARNINGS      
 #define GLUT_DISABLE_ATEXIT_HACK 
 
@@ -13,7 +16,7 @@ GLfloat Oldy = 0.0;
 //与实现角度大小相关的参数
 float xRotate = 0.0f;
 float yRotate = 0.0f;
-float scale = 0.38;
+float scale = 0.3;
 //与实现位置移动有关的参数
 float room_x = 0.0;
 float room_y = 0.0;
@@ -30,7 +33,7 @@ const char * modelObjFileName = "model/room/Hosuse.obj";
 const char * particleObjFileName = "Cube.obj";
 bool ifUseModel = false;				//是否使用模型作为粒子
 
-const float water_color[4] = { 89.0 / 255, 195.0 / 255, 226.0 / 255,0.1 };
+const float water_color[4] = { 89.0 / 255, 195.0 / 255, 226.0 / 255,0.3f };
 FluidSystem*					g_pSPHSystem = 0;
 
 //视点      
@@ -55,6 +58,9 @@ void initGL()
 	model_particle.parse();
 	resetSPHSystem();
 	gluLookAt(eye[0], eye[1], eye[2], center[0], center[1], center[2], 0, 0, 1);
+	//启用混合 为了透明效果
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
 }
 
 void reshape(GLint w, GLint h)
@@ -165,10 +171,13 @@ void display()
 	fVector3 pos((rand() & 100 - 50) / 100.0 *5, 100+ (rand() & 100 - 50) / 100.0 * 5, (rand() & 100 - 50) / 100.0 * 5);
 	g_pSPHSystem->_addParticle(pos);
 	*/
-	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClearColor(0.2, 0.2, 0.2, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);  //清理颜色和深度缓存     
 
-	//由于渲染是独立的，重力会随glrotatef旋转，因此需要把它转回原位。此处由于sin采用弧度制，glrotatef采用角度制，被卡了很久。助教说可以利用顶点变量，在变换后会自动变成变换后坐标。
+	/*由于渲染是独立的，重力会随glrotatef旋转，因此需要把它转回原位。此处由于sin采用弧度制，glrotatef采用角度制，被卡了很久。
+	  助教说可以利用顶点变量，在变换后会自动变成变换后坐标。
+	  不过此处有个小惊喜，由于安卓端加速度传感器是重力在各方向的投影，因此可以根据xyz三个值倒推出xRotate和yRotate。
+	*/
 	fVector3 gravity(-9.8 * sin(xRotate / 180 * PI) * sin(yRotate / 180 * PI), -9.8 * cos(xRotate/180 * PI), 9.8 * sin(xRotate / 180 * PI) * cos(yRotate / 180 * PI));
 	g_pSPHSystem->_setGravity(gravity);
 
@@ -179,8 +188,9 @@ void display()
 	glLoadIdentity();
 	glRotatef(xRotate, 1.0f, 0.0f, 0.0f); // 让物体旋转的函数 第一个参数是角度大小，后面的参数是旋转的法向量
 	glRotatef(yRotate, 0.0f, 1.0f, 0.0f);
-	glTranslatef(room_x, room_y-70.f, 0.f);
-	{//灯光
+	glTranslatef(room_x, room_y-40.f, 0.f);
+	//灯光
+	{
 		GLfloat light_position[] = { 200.0f, 100.0f, 400.0f, 1.0f };
 		GLfloat light_ambient[] = { light_intensity, light_intensity, light_intensity, 1.0f };
 		GLfloat light_diffuse[] = { light_intensity, light_intensity, light_intensity, 1.0f };
@@ -196,7 +206,9 @@ void display()
 		glEnable(GL_DEPTH_TEST);
 	}
 	glScalef(100 * scale, 100 * scale, 100 * scale);
+	glDisable(GL_LIGHTING);
 	model.draw();
+	glEnable(GL_LIGHTING);
 	glPopMatrix();
 	glFlush();
 
@@ -214,18 +226,6 @@ void display()
 	const float_3* p = g_pSPHSystem->getPointBuf();
 	unsigned int stride = g_pSPHSystem->getPointStride();
 
-	{
-		GLfloat mat_ambient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
-		GLfloat mat_diffuse[] = { 89.0 / 255, 195.0 / 255, 226.0 / 255,1 }; 
-		GLfloat mat_specular[] = { 1.0f, 1.0f, 1.0f, 1.0f }; 
-		//GLfloat mat_emission[] = { 0.0f, 0.0f, 0.0f, 1.0f };  
-		//GLfloat mat_shininess = 30.0f;
-		glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-		glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-		//glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
-		//glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess);
-	}
 	/*
 	绘制重力向量 用于检验
 	glBegin(GL_LINES);
@@ -236,10 +236,11 @@ void display()
 	glEnd();
 	*/
 	if (!ifUseModel) {//点作为粒子
+		glDisable(GL_LIGHTING);
 		glEnable(GL_POINT_SMOOTH);//点会画成圆，不开是矩形
 		glPointSize(40.0f);
 		glBegin(GL_POINTS);
-		//glColor4fv(water_color);			//水蓝色	
+		glColor4fv(water_color);			//水蓝色	
 		//glScalef(10.0, 10.0, 10.0);
 		for (unsigned int n = 0; n<g_pSPHSystem->getPointCounts(); n++)
 		{
@@ -248,14 +249,27 @@ void display()
 		}
 		glEnd();
 		glDisable(GL_POINT_SMOOTH);
+		glEnable(GL_LIGHTING);
 	}
 	else {//模型作为粒子
 		for (unsigned int n = 0; n<g_pSPHSystem->getPointCounts(); n++)
 		{
+			{
+				GLfloat mat_ambient[] = { 0.1, 0.1, 0.1, 0.1 };
+				GLfloat mat_diffuse[] = { 89.0 / 255, 195.0 / 255, 226.0 / 255,0.8 };
+				GLfloat mat_specular[] = { 0, 0, 0, 1.0f };
+				//GLfloat mat_emission[] = { 0.23, 0.44, 0.87, 1.0f };
+				//GLfloat mat_shininess = 30.0f;
+				glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+				glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+				//glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
+				//glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess);
+			}
 			glPushMatrix();
 			glTranslatef(p->x, p->y, p->z);
 			//model_particle.draw();
-			glutSolidSphere(4, 5, 5);
+			glutSolidSphere(4, 20, 20);
 			glPopMatrix();
 			p = (const float_3*)(((const char*)p) + stride);
 		}
@@ -268,10 +282,8 @@ void display()
 
 void idle(void)
 {
-
 	glutPostRedisplay();
 }
-
 
 void startServer() {
 	short port;
@@ -346,19 +358,36 @@ void startServer() {
 		std::string str(buf);
 		std::istringstream is(str);
 		std::string tmp;
-		if (buf[0] == 's') {
+		float x, y, z;
+		/*if (buf[0] == 's') {
 			is >> tmp;
 			is >> tmp;
-			xRotate += atof(tmp.c_str());
+			x = (atof(tmp.c_str()));
 			is >> tmp;
-			yRotate += atof(tmp.c_str());
+			y = (atof(tmp.c_str()));
+			is >> tmp;
+			y = (atof(tmp.c_str()));
 		}
-		else {
-			is >> tmp;
-			xRotate += atof(tmp.c_str());
-			is >> tmp;
-			yRotate += atof(tmp.c_str());
+		else {*/
+		is >> tmp;
+		x = (atof(tmp.c_str()));
+		is >> tmp;
+		y = (atof(tmp.c_str()));
+		is >> tmp;
+		z = (atof(tmp.c_str()));
+		/*下面是解方程
+		x = -9.8 * sin(xRotate / 180 * PI) * sin(yRotate / 180 * PI)
+		y = -9.8 * cos(xRotate/180 * PI)
+		z = 9.8 * sin(xRotate / 180 * PI) * cos(yRotate / 180 * PI))
+		x只能假设落在0到PI
+		*/
+		xRotate = -acos(y / (-9.8)) / PI * 180;
+		float sin_xRotate = sin(xRotate / 180.0 * PI);
+		yRotate = asin(x / (-9.8) / sin_xRotate) / PI * 180;
+		if(z / 9.8 / sin_xRotate < 0){
+			yRotate = PI - yRotate;
 		}
+		//}
 		std::cout << "Message from" << inet_ntoa(clientAddress.sin_addr) << xRotate << " " << yRotate << std::endl;
 
 	}
