@@ -31,12 +31,13 @@ Model model_particle;
 
 GLuint texture[1];
 
-const char * modelObjFileName = "model/room/Hosuse.obj";
+const char * modelObjFileName = "model/room/Housse.obj";
 const char * particleObjFileName = "Cube.obj";
 const char * textureFileName = "waterBall.jpg";
 int particleShowMode = 0;				//0：点表示粒子；1：点表示粒子，加载纹理；2：加载模型表示粒子
+bool ifControlledByAndroid = false;
 
-const float water_color[4] = { 89.0 / 255, 195.0 / 255, 226.0 / 255,0.3f };
+const float water_color[4] = { 89.0 / 255, 195.0 / 255, 226.0 / 255,0.2f };
 FluidSystem*					g_pSPHSystem = 0;
 
 //视点      
@@ -131,9 +132,10 @@ void keyboard(unsigned char key, int x, int y){
 
 void special(int key, int x, int y) {
 	switch (key) {
-		case 1://F1 切换粒子表示模式
-			particleShowMode++;
-			if (particleShowMode == 4)particleShowMode = 0;
+		//切换粒子表示模式
+		case 1://F1
+			if(particleShowMode == 3)particleShowMode = 0;
+			else particleShowMode++;
 			break;
 		//控制远近
 		case 2://F2
@@ -143,6 +145,10 @@ void special(int key, int x, int y) {
 		case 3://F3
 			scale += 0.1;
 			std::cout << scale << " scale" << std::endl;
+			break;
+		//是否由手机控制
+		case 4://F4
+			ifControlledByAndroid = !ifControlledByAndroid;
 			break;
 		//控制灯光亮暗
 		case 11://F11
@@ -190,133 +196,184 @@ void display()
 	g_pSPHSystem->_setGravity(gravity);
 
 	//draw room
-	glPushMatrix();
-	glLoadIdentity();
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glRotatef(xRotate, 1.0f, 0.0f, 0.0f); // 让物体旋转的函数 第一个参数是角度大小，后面的参数是旋转的法向量
-	glRotatef(yRotate, 0.0f, 1.0f, 0.0f);
-	glTranslatef(room_x, room_y-40.f, 0.f);
-	//灯光
 	{
-		GLfloat light_position[] = { 200.0f, 200.0f, -300.0f, 1.0f };
-		GLfloat light_ambient[] = { light_intensity, light_intensity, light_intensity, 1.0f };
-		GLfloat light_diffuse[] = { light_intensity, light_intensity, light_intensity, 1.0f };
-		GLfloat light_specular[] = { light_intensity, light_intensity, light_intensity, 1.0f };
-		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-		glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-		glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
-
-		//开启灯光  
-		glEnable(GL_LIGHT0);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_DEPTH_TEST);
-	}
-	glScalef(100 * scale, 100 * scale, 100 * scale);
-	glDisable(GL_LIGHTING);
-	model.draw();
-	glEnable(GL_LIGHTING);
-	glPopMatrix();
-	glFlush();
-
-	//draw particles
-	glPushMatrix();
-	glLoadIdentity();  
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	glRotatef(xRotate, 1.0f, 0.0f, 0.0f); // 让物体旋转的函数 第一个参数是角度大小，后面的参数是旋转的法向量
-	glRotatef(yRotate, 0.0f, 1.0f, 0.0f);
-	glTranslatef(water_x, water_y, 0.0f);
-	glScalef(scale, scale, scale); // 缩放
-
-	g_pSPHSystem->tick();
-	const float_3* p = g_pSPHSystem->getPointBuf();
-	unsigned int stride = g_pSPHSystem->getPointStride();
-
-	/*
-	绘制重力向量 用于检验
-	glBegin(GL_LINES);
-	glColor3f(1, 1, 1);
-	glVertex3f(0, 0, 0);
-	fVector3 grav = g_pSPHSystem->_getGravity();
-	glVertex3f(grav.x*1000, grav.y*1000, grav.z*1000);
-	glEnd();
-	*/
-	if (particleShowMode == 0) {
-		//0：点表示粒子；
-		glDisable(GL_LIGHTING);
-		glEnable(GL_POINT_SMOOTH);//点会画成圆，不开是矩形
-		glPointSize(40.0f);
-		glBegin(GL_POINTS);
-		glColor4fv(water_color);			//水蓝色	
-		//glScalef(10.0, 10.0, 10.0);
-		for (unsigned int n = 0; n < g_pSPHSystem->getPointCounts(); n++)
+		glPushMatrix();
+		glLoadIdentity();
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		//glRotatef(xRotate, 1.0f, 0.0f, 0.0f); // 让物体旋转的函数 第一个参数是角度大小，后面的参数是旋转的法向量
+		//glRotatef(yRotate, 0.0f, 1.0f, 0.0f);
+		glTranslatef(room_x, room_y - 40.f, 0.f);
+		//灯光
 		{
-			glVertex3f(p->x, p->y, p->z);
-			p = (const float_3*)(((const char*)p) + stride);
+			GLfloat light_position[] = { 200.0f, 200.0f, -300.0f, 1.0f };
+			GLfloat light_ambient[] = { light_intensity, light_intensity, light_intensity, 1.0f };
+			GLfloat light_diffuse[] = { light_intensity, light_intensity, light_intensity, 1.0f };
+			GLfloat light_specular[] = { light_intensity, light_intensity, light_intensity, 1.0f };
+			glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+			glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+			glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+			glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+
+			//开启灯光  
+			glEnable(GL_LIGHT0);
+			glEnable(GL_LIGHTING);
+			glEnable(GL_DEPTH_TEST);
 		}
-		glEnd();
-		glDisable(GL_POINT_SMOOTH);
-		glEnable(GL_LIGHTING);
-	}
-	else if(particleShowMode == 1){
-		//1：点表示粒子，加载纹理；
-		glDisable(GL_LIGHTING);
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, texture[0]);  //选择纹理texture[status]       
-		glBegin(GL_QUADS);
-		for (unsigned int n = 0; n < g_pSPHSystem->getPointCounts(); n++)
+		glScalef(100 * scale, 100 * scale, 100 * scale);
+		//glDisable(GL_LIGHTING);
 		{
-			const GLfloat x1 = p->x - 0.5, x2 = p->x + 0.5;
-			const GLfloat y1 = p->y - 0.5, y2 = p->y + 0.5;
-			const GLfloat z1 = p->z - 0.5, z2 = p->z + 0.5;
+			GLfloat mat_ambient[] = { 0.1, 0.1, 0.1, 0.1 };
+			GLfloat mat_diffuse[] = { 0.7,0.7,0.7,0.7 };
+			GLfloat mat_specular[] = { 1, 1, 1, 1.0f };
+			//GLfloat mat_emission[] = { 0.23, 0.44, 0.87, 1.0f };
+			//GLfloat mat_shininess = 30.0f;
+			glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+			glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+			glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+			//glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
+			//glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess);
+		}
+		model.draw();
+		//glEnable(GL_LIGHTING);
+		glPopMatrix();
+		glFlush();
+	}
+	//draw particles and container
+	{
+		glPushMatrix();
+		glLoadIdentity();
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glRotatef(xRotate, 1.0f, 0.0f, 0.0f); // 让物体旋转的函数 第一个参数是角度大小，后面的参数是旋转的法向量
+		glRotatef(yRotate, 0.0f, 1.0f, 0.0f);
+		glTranslatef(water_x, water_y, 0.0f);
+		glScalef(scale, scale, scale); // 缩放
+		{
+			GLfloat mat_ambient[] = { 0.1, 0.1, 0.1, 0.1 };
+			GLfloat mat_diffuse[] = { 89.0 / 255, 195.0 / 255, 226.0 / 255,0.8 };
+			GLfloat mat_specular[] = { 0, 0, 0, 1.0f };
+			//GLfloat mat_emission[] = { 0.23, 0.44, 0.87, 1.0f };
+			//GLfloat mat_shininess = 30.0f;
+			glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+			glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+			glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+			//glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
+			//glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess);
+		}
+		//draw particles
+		{
+			g_pSPHSystem->tick();
+			const float_3* p = g_pSPHSystem->getPointBuf();
+			unsigned int stride = g_pSPHSystem->getPointStride();
+
+			/*
+			绘制重力向量 用于检验
+			glBegin(GL_LINES);
+			glColor3f(1, 1, 1);
+			glVertex3f(0, 0, 0);
+			fVector3 grav = g_pSPHSystem->_getGravity();
+			glVertex3f(grav.x*1000, grav.y*1000, grav.z*1000);
+			glEnd();
+			*/
+			if (particleShowMode == 0) {
+				//0：点表示粒子；
+				glDisable(GL_LIGHTING);
+				glEnable(GL_POINT_SMOOTH);//点会画成圆，不开是矩形
+				glPointSize(20.0f);
+				glBegin(GL_POINTS);
+				glColor4fv(water_color);			//水蓝色	
+				//glScalef(10.0, 10.0, 10.0);
+				for (unsigned int n = 0; n < g_pSPHSystem->getPointCounts(); n++)
+				{
+					glVertex3f(p->x, p->y, p->z);
+					p = (const float_3*)(((const char*)p) + stride);
+				}
+				glEnd();
+				glDisable(GL_POINT_SMOOTH);
+				glEnable(GL_LIGHTING);
+			}
+			else if (particleShowMode == 1) {
+				//1：点表示粒子，加载纹理；
+				{
+					GLfloat mat_ambient[] = { 0.1, 0.1, 0.1, 0.1 };
+					GLfloat mat_diffuse[] = { 89.0 / 255, 195.0 / 255, 226.0 / 255,0.4 };
+					GLfloat mat_specular[] = { 0, 0, 0, 1.0f };
+					//GLfloat mat_emission[] = { 0.23, 0.44, 0.87, 1.0f };
+					//GLfloat mat_shininess = 30.0f;
+					glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
+					glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+					glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
+					//glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
+					//glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess);
+				}
+				glDisable(GL_LIGHTING);
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D, texture[0]);  //选择纹理texture[status]       
+				glBegin(GL_QUADS);
+				for (unsigned int n = 0; n < g_pSPHSystem->getPointCounts(); n++)
+				{
+					const GLfloat x1 = p->x - 0.5, x2 = p->x + 0.5;
+					const GLfloat y1 = p->y - 0.5, y2 = p->y + 0.5;
+					const GLfloat z1 = p->z - 0.5, z2 = p->z + 0.5;
+					const GLfloat point[6][4][3] = { { { x1,y1,z1 },{ x2,y1,z1 },{ x2,y2,z1 },{ x1,y2,z1 } },
+						{ { x1, y1, z2 },{ x2,y1,z2 },{ x2,y2,z2 },{ x1,y2,z2 } },
+						{ { x1,y1,z1 },{ x2,y1,z1 },{ x2,y1,z2 },{ x1, y1, z2 } },
+						{ { x2,y2,z1 },{ x1,y2,z1 },{ x1,y2,z2 },{ x2,y2,z2 } },
+						{ { x1,y1,z1 },{ x1,y2,z1 },{ x1,y2,z2 },{ x1, y1, z2 } },
+						{ { x2,y1,z1 },{ x2,y2,z1 },{ x2,y2,z2 },{ x2,y1,z2 } } };
+					const GLfloat dir[4][2] = { { 0,0 },{ 1,0 },{ 1,1 },{ 0,1 } };
+					for (int j = 0; j < 6; j++) {
+						for (int i = 0; i < 4; i++) {
+							glTexCoord2fv(dir[i]);
+							glVertex3fv(point[j][i]);
+						}
+					}
+					p = (const float_3*)(((const char*)p) + stride);
+				}
+				glEnd();
+				glDisable(GL_TEXTURE_2D);
+				glEnable(GL_LIGHTING);
+			}
+			else {
+				//2：加载模型表示粒子
+				for (unsigned int n = 0; n < g_pSPHSystem->getPointCounts(); n++)
+				{
+					
+					glPushMatrix();
+					glTranslatef(p->x, p->y, p->z);
+					model_particle.draw();
+					//glutSolidSphere(4, 20, 20);
+					glPopMatrix();
+					p = (const float_3*)(((const char*)p) + stride);
+				}
+			}
+		}
+		//draw container
+		{
+			glDisable(GL_LIGHTING);
+			glBegin(GL_QUADS);
+			glColor4fv(water_color);
+			const GLfloat x1 = -30, x2 = 30;
+			const GLfloat y1 = -5, y2 = 55;
+			const GLfloat z1 = -30, z2 = 30;
 			const GLfloat point[6][4][3] = { { { x1,y1,z1 },{ x2,y1,z1 },{ x2,y2,z1 },{ x1,y2,z1 } },
 			{ { x1, y1, z2 },{ x2,y1,z2 },{ x2,y2,z2 },{ x1,y2,z2 } },
-			{ { x1,y1,z1 },{ x2,y1,z1 },{ x1, y1, z2 },{ x2,y1,z2 } },
-			{ { x2,y2,z1 },{ x1,y2,z1 },{ x2,y2,z2 },{ x1,y2,z2 } },
-			{ { x1,y1,z1 },{ x1,y2,z1 },{ x1, y1, z2 },{ x1,y2,z2 } },
-			{ { x2,y1,z1 },{ x2,y2,z1 },{ x2,y1,z2 },{ x2,y2,z2 } } };
-			const GLfloat dir[4][2] = { { 0,0 },{ 1,0 },{ 1,1 },{ 0,1 } };
+			{ { x1,y1,z1 },{ x2,y1,z1 },{ x2,y1,z2 },{ x1, y1, z2 } },
+			{ { x2,y2,z1 },{ x1,y2,z1 },{ x1,y2,z2 },{ x2,y2,z2 } },
+			{ { x1,y1,z1 },{ x1,y2,z1 },{ x1,y2,z2 },{ x1, y1, z2 } },
+			{ { x2,y1,z1 },{ x2,y2,z1 },{ x2,y2,z2 },{ x2,y1,z2 } } };
 			for (int j = 0; j < 6; j++) {
 				for (int i = 0; i < 4; i++) {
-					glTexCoord2fv(dir[i]);
 					glVertex3fv(point[j][i]);
 				}
 			}
-			p = (const float_3*)(((const char*)p) + stride);
+			glEnd();
+			glEnable(GL_LIGHTING);
 		}
-		glEnd();
-		glDisable(GL_TEXTURE_2D);
-		glEnable(GL_LIGHTING);
+		glPopMatrix();
+		glFlush();
 	}
-	else {
-		//2：加载模型表示粒子
-		for (unsigned int n = 0; n<g_pSPHSystem->getPointCounts(); n++)
-		{
-			{
-				GLfloat mat_ambient[] = { 0.1, 0.1, 0.1, 0.1 };
-				GLfloat mat_diffuse[] = { 89.0 / 255, 195.0 / 255, 226.0 / 255,0.8 };
-				GLfloat mat_specular[] = { 0, 0, 0, 1.0f };
-				//GLfloat mat_emission[] = { 0.23, 0.44, 0.87, 1.0f };
-				//GLfloat mat_shininess = 30.0f;
-				glMaterialfv(GL_FRONT, GL_AMBIENT, mat_ambient);
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-				glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
-				//glMaterialfv(GL_FRONT, GL_EMISSION, mat_emission);
-				//glMaterialf(GL_FRONT, GL_SHININESS, mat_shininess);
-			}
-			glPushMatrix();
-			glTranslatef(p->x, p->y, p->z);
-			//model_particle.draw();
-			glutSolidSphere(4, 20, 20);
-			glPopMatrix();
-			p = (const float_3*)(((const char*)p) + stride);
-		}
-	}
-	glPopMatrix();
-	glFlush();
-
 	glutSwapBuffers();	//这是Opengl中用于实现双缓存技术的一个重要函数
 }
 
@@ -421,11 +478,18 @@ void startServer() {
 		z = 9.8 * sin(xRotate / 180 * PI) * cos(yRotate / 180 * PI))
 		x只能假设落在0到PI
 		*/
-		xRotate = -acos(y / (-9.8)) / PI * 180;
-		float sin_xRotate = sin(xRotate / 180.0 * PI);
-		yRotate = asin(x / (-9.8) / sin_xRotate) / PI * 180;
-		if(z / 9.8 / sin_xRotate < 0){
-			yRotate = PI - yRotate;
+		if (ifControlledByAndroid) {
+			std::cout << x << ' ' << y <<' '<<z<< std::endl;
+			if (y / (-9.8) > 1)y = -9.8;							//此处被acos、asin坑，会出现nan
+			if (y / (-9.8) < -1)y = 9.8;
+			xRotate = acos(y / (-9.8)) / PI * 180;
+			float sin_xRotate = sin(xRotate / 180.0 * PI);
+			if (x / (-9.8) / sin_xRotate > 1)yRotate = 90;
+			else if (x / (-9.8) / sin_xRotate < -1)yRotate = -90;
+			else yRotate = asin(x / (-9.8) / sin_xRotate) / PI * 180;
+			if (z / 9.8 / sin_xRotate < 0) {
+				yRotate = PI - yRotate;
+			}
 		}
 		//}
 		std::cout << "Message from" << inet_ntoa(clientAddress.sin_addr) << xRotate << " " << yRotate << std::endl;
@@ -444,7 +508,7 @@ int main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH); // GLUT_Double 表示使用双缓存而非单缓存
 	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(800, 500);
-	glutCreateWindow("倒水模型");
+	glutCreateWindow("流体");
 
 	initGL();
 	glutMouseFunc(mouse);

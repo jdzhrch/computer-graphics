@@ -1,7 +1,7 @@
 #include "basicElement.h"
 #include "sph_neighbor_table.h"
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 NeighborTable::NeighborTable()
 	: m_pointExtraData(0)
 	, m_pointCounts(0)
@@ -14,14 +14,14 @@ NeighborTable::NeighborTable()
 {
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 NeighborTable::~NeighborTable()
 {
 	if (m_pointExtraData) free(m_pointExtraData);
 	if (m_neighborDataBuf) free(m_neighborDataBuf);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 void NeighborTable::reset(unsigned short pointCounts)
 {
 	int a = sizeof(PointExtraData);
@@ -40,14 +40,14 @@ void NeighborTable::reset(unsigned short pointCounts)
 	m_dataBufOffset = 0;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 void NeighborTable::point_prepare(unsigned short ptIndex)
 {
 	m_currPoint = ptIndex;
 	m_currNeighborCounts = 0;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 bool NeighborTable::point_add_neighbor(unsigned short ptIndex, float distance)
 {
 	if (m_currNeighborCounts >= MAX_NEIGHTBOR_COUNTS) return false;
@@ -59,7 +59,7 @@ bool NeighborTable::point_add_neighbor(unsigned short ptIndex, float distance)
 	return true;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 void NeighborTable::point_commit(void)
 {
 	if (m_currNeighborCounts == 0) return;
@@ -86,7 +86,7 @@ void NeighborTable::point_commit(void)
 	m_dataBufOffset += distance_size;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 void NeighborTable::_growDataBuf(unsigned int need_size)
 {
 	unsigned int newSize = m_dataBufSize>0 ? m_dataBufSize : 1;
@@ -103,7 +103,7 @@ void NeighborTable::_growDataBuf(unsigned int need_size)
 	m_dataBufSize = newSize;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 void NeighborTable::getNeighborInfo(unsigned short ptIndex, int index, unsigned short& neighborIndex, float& neighborDistance)
 {
 	PointExtraData neighData = m_pointExtraData[ptIndex];

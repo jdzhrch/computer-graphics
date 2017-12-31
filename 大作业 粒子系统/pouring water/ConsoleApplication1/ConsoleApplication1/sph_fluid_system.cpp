@@ -1,6 +1,6 @@
 #include "sph_fluid_system.h"
 
-	//-----------------------------------------------------------------------------------------------------------------
+	 
 	FluidSystem::FluidSystem()
 	{
 		m_unitScale = 0.004f;			// �ߴ絥λ
@@ -22,12 +22,12 @@
 		m_kernelViscosity = 45.0f / (3.141592f * pow(m_smoothRadius, 6));
 	}
 
-	//-----------------------------------------------------------------------------------------------------------------
+	 
 	FluidSystem::~FluidSystem()
 	{
 	}
 
-	//-----------------------------------------------------------------------------------------------------------------
+	 
 	void FluidSystem::_addFluidVolume(const fBox3& fluidBox, float spacing)
 	{
 		float cx = (fluidBox.max.x + fluidBox.min.x) / 2.f;
@@ -57,7 +57,7 @@
 	void FluidSystem::_setGravity(const fVector3 gravity){
 		m_gravityDir = gravity;
 	}
-	//-----------------------------------------------------------------------------------------------------------------
+	 
 	void FluidSystem::tick(void)
 	{
 		m_gridContainer.insertParticles(&m_pointBuffer);
@@ -66,7 +66,7 @@
 		_advance();
 	}
 
-	//-----------------------------------------------------------------------------------------------------------------
+	 
 	void FluidSystem::_init(unsigned short maxPointCounts, const fBox3& wallBox, const fBox3& initFluidBox, const fVector3& gravity)
 	{
 		m_pointBuffer = PointPool(maxPointCounts);
@@ -82,7 +82,7 @@
 		m_gridContainer.init(wallBox, m_unitScale, m_smoothRadius*2.f, 1.0);
 	}
 
-	//-----------------------------------------------------------------------------------------------------------------
+	 
 	void FluidSystem::_computePressure(void)
 	{
 		//h^2
@@ -142,7 +142,7 @@
 		}
 	}
 
-	//-----------------------------------------------------------------------------------------------------------------
+	 
 	void FluidSystem::_computeForce(void)
 	{
 		float h2 = m_smoothRadius*m_smoothRadius;
@@ -186,7 +186,7 @@
 		}
 	}
 
-	//-----------------------------------------------------------------------------------------------------------------
+	 
 	void FluidSystem::_advance(void)
 	{
 

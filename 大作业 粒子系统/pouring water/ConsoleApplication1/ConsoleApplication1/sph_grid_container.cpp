@@ -3,17 +3,17 @@
 #include "sph_ParticlePool.h"
 
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 GridContainer::GridContainer()
 {
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 GridContainer::~GridContainer()
 {
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 int GridContainer::getGridData(int gridIndex)
 {
 	if (gridIndex<0 || gridIndex >= (int)m_gridData.size()) return -1;
@@ -21,7 +21,7 @@ int GridContainer::getGridData(int gridIndex)
 	return m_gridData[gridIndex];
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 int GridContainer::getGridCellIndex(float px, float py, float pz)
 {
 	int gx = (int)((px - m_GridMin.x) * m_GridDelta.x);
@@ -30,7 +30,7 @@ int GridContainer::getGridCellIndex(float px, float py, float pz)
 	return (gz*m_GridRes.y + gy)*m_GridRes.x + gx;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 void GridContainer::init(const fBox3& box, float sim_scale, float cell_size, float border)
 {
 	// Ideal grid cell size (gs) = 2 * smoothing radius = 0.02*2 = 0.04
@@ -59,7 +59,7 @@ void GridContainer::init(const fBox3& box, float sim_scale, float cell_size, flo
 	m_gridData.resize(gridTotal);
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 void GridContainer::insertParticles(PointPool* pointBuffer)
 {
 	std::fill(m_gridData.begin(), m_gridData.end(), -1);
@@ -77,7 +77,7 @@ void GridContainer::insertParticles(PointPool* pointBuffer)
 	}
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 int GridContainer::findCell(const fVector3& p)
 {
 	int gc = getGridCellIndex(p.x, p.y, p.z);
@@ -86,7 +86,7 @@ int GridContainer::findCell(const fVector3& p)
 	return gc;
 }
 
-//-----------------------------------------------------------------------------------------------------------------
+ 
 void GridContainer::findCells(const fVector3& p, float radius, int* gridCell)
 {
 	for (int i = 0; i<8; i++) gridCell[i] = -1;
